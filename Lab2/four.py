@@ -1,66 +1,42 @@
+import argparse
 import os
 import datetime
+from datetime import datetime
 import csv
 import re
 
-def vvod():
-    g = input("введите год:")
-    while int(g) > 2024:
-        print("некорректный ввод")
-        g = input("введите год:")
-    m = input("введите месяц:")
-    while int(m)>12:
-        print("некорректный ввод")
-        m = input("введите месяц:")
 
-    d=input("введите день:")
-    if int(m)==1 or int(m)==3 or int(m)==5 or int(m)==7 or int(m)==8 or int(m)==10 or int(m)==12:
-        while int(d) > 31:
-            print("некорректный ввод")
-            d = input("введите день:")
-    if int(m) == 4 or int(m) == 6 or int(m) == 9 or int(m) == 11:
-        while int(d) > 30:
-            print("некорректный ввод")
-            d = input("введите день:")
-    if int(m)==2:
-        if int(g) % 4 != 0:
-            while int(d) > 28:
-                print("некорректный ввод")
-                d = input("введите день:")
-        else:
-            while int(d) > 29:
-                print("некорректный ввод")
-                d = input("введите день:")
-
-
-
-    day = datetime.date(int(g), int(m), int(d))
-    return (day)
-def search0(v):
+def search_zero(search_date:datetime)->None:
+    """поиск по дате в исходном файле"""
     i=0
-    with open("C:/Users/dog/Desktop/долги/прикладное/валюта/course.csv") as csvfile:
+    with open(args.csv) as csvfile:
         reader = csv.DictReader(csvfile, delimiter=";")
         for rov in reader:
-            if rov['Дата']==str(v):
+            if rov['Дата']==str(search_date):
                 print(rov['Информация'])
                 i=1
         if i==0:
             print("None")
 
-def search1(v):
+
+def search_one(search_date:datetime)->None:
+    """поиск по дате в  x и y файлах"""
     i=0
     p=0
-    with open("C:/Users/dog/Desktop/долги/прикладное/валюта/X Y/X.csv") as csvfile:
+    with open(args.x) as csvfile:
         reader = csv.DictReader(csvfile, delimiter=";")
         for rov in reader:
             i = i+1
-            if rov["Дата"] == str(v):
+            if rov["Дата"] == str(search_date):
                 p=1
-                Y(i)
+                Y_file(i)
         if p==0:
             print("None")
-def Y(i):
-    with open("C:/Users/dog/Desktop/долги/прикладное/валюта/X Y/Y.csv") as csvfile:
+
+
+def Y_file(i:int)->None:
+    """поиск по дате в y файле"""
+    with open(args.y) as csvfile:
         reader = csv.DictReader(csvfile, delimiter=";")
         y = 0
         for rov in reader:
@@ -69,34 +45,38 @@ def Y(i):
                 print(rov['Информация'])
 
 
-def search2(v):
+def search_two(search_date:datetime)->None:
+    """поиск по дате в файлах разбитых на года"""
     i=0
-    for filename in os.listdir("C:/Users/dog/Desktop/долги/прикладное/валюта/года"):
-        #print(filename)
-        with open("C:/Users/dog/Desktop/долги/прикладное/валюта/года/"+filename) as csvfile:
+    for filename in os.listdir(args.year):
+        with open(args.year+filename) as csvfile:
             reader = csv.DictReader(csvfile, delimiter=";")
             for rov in reader:
-                if rov['Дата'] == str(v):
+                if rov['Дата'] == str(search_date):
                     print(rov['Информация'])
                     i = 1
 
     if i == 0:
         print("None")
-def search3(v):
+
+
+def search_three(search_date:datetime)->None:
+    """поиск по дате в файлах разбитых на недели"""
     i=0
-    for filename in os.listdir("C:/Users/dog/Desktop/долги/прикладное/валюта/недели"):
-        #print(filename)
-        with open("C:/Users/dog/Desktop/долги/прикладное/валюта/недели/" + filename) as csvfile:
-        #with open("D:\\3\\"+filename) as csvfile:
+    for filename in os.listdir(args.week):
+        with open(args.week + filename) as csvfile:
             reader = csv.DictReader(csvfile, delimiter=";")
             for rov in reader:
-                if rov['Дата'] == str(v):
+                if rov['Дата'] == str(search_date):
                     print(rov['Информация'])
                     i = 1
 
     if i == 0:
         print("None")
-def tuple(way):
+
+
+def tuple(way:str)->list:
+    """вывод списка информации из файла"""
     tuple_list = []
     with open(way) as csvfile:
         reader = csv.DictReader(csvfile, delimiter=";")
@@ -104,11 +84,12 @@ def tuple(way):
             tuple_list.append((rov['Дата'],rov['Информация']),)
         return tuple_list
 
-def next(tuple):
+
+def next(tuple:list)->list:
+    """поиск минимальной даты в файле"""
     u=re.split('-', tuple[0][0].strip())
     min_data=datetime.date(int(u[0]), int(u[1]), int(u[2]))
     tuple_element=tuple[0]
-    #print(min_data)
     for item in tuple:
         z = re.split('-', item[0].strip())
         data_next=datetime.date(int(z[0]), int(z[1]), int(z[2]))
@@ -123,35 +104,35 @@ def next(tuple):
         tuple_list.append(item,)
     return tuple_list
 
+
 if __name__ == "__main__":
-    #v=vvod()
-    v=datetime.date(2023, 10, 9)
+    parser = argparse.ArgumentParser(description="пример работы")
+    parser.add_argument('--date', type=lambda d: datetime.strptime(d, '%Y-%m-%d'), default="2023-10-9")
+    parser.add_argument('--csv', type=str, default='C:/Users/dog/Desktop/долги/прикладное/валюта/course.csv')
+    parser.add_argument('--x', type=str, default='C:/Users/dog/Desktop/долги/прикладное/валюта/X Y/X.csv')
+    parser.add_argument('--y', type=str, default='C:/Users/dog/Desktop/долги/прикладное/валюта/X Y/Y.csv')
+    parser.add_argument('--year', type=str, default='C:/Users/dog/Desktop/долги/прикладное/валюта/года')
+    parser.add_argument('--week', type=str, default='C:/Users/dog/Desktop/долги/прикладное/валюта/недели')
+    args = parser.parse_args()
+    search_date = args.date
     while True:
         print("из каких файлов искать:0.исходного файла, 1.X и Y, 2.по годам, 3. по неделям, 4. хватит искать")
         param = input("введите:")
         match int(param):
             case 0:
-                search0(v)
+                search_zero(search_date)
             case 1:
-                search1(v)
+                search_one(search_date)
             case 2:
-                search2(v)
+                search_two(search_date)
             case 3:
-                search3(v)
+                search_three(search_date)
             case 4:
                 break
-    #print(v)
-    #search0(v)
-    #search0(v)
-    #search1(v)
-    #search2(v)
-    #search3(v)
     print("введите полный путь к файлу для поиска самой ранней даты")
     way = input("введите пусть:")
     tuple = tuple(way)
     while True:
-
-    #print(tuple)
         tuple = next(tuple)
         print("1. продолжить 2. завершить")
         i = input("введите пусть:")

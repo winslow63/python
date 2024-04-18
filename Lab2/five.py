@@ -2,51 +2,59 @@ import os
 import datetime
 import csv
 import re
-class search0:
-    def __init__(self, data,v,count):
+import argparse
+
+class search_zero:
+    def __init__(self, data:list,search_date:datetime,count:int)->None:
         self.data = data
-        self.v = v
+        self.search_date = search_date
         self.i=0
         self.count=count
 
-    def __iter__(self):
+    def __iter__(self)->"search_zero":
         return self
 
     def __next__(self):
         if self.i<self.count:
-            if self.data[self.i][0] == str(self.v):
+            if self.data[self.i][0] == str(self.search_date):
 
                 return self.data[self.i][1]
             else:
                 self.i+=1
                 return -1
-                #raise StopIteration
         else:
             raise StopIteration
-class search1:
-    def __init__(self, X,Y,v,count):
-        self.X = X
-        self.Y = Y
-        self.v = v
+
+
+class search_one:
+    def __init__(self, data_x:list,data_y:list,search_date:datetime,count:int)->None:
+        self.data_x = data_x
+        self.data_y = data_y
+        self.search_date = search_date
         self.i=0
         self.count=count
 
-    def __iter__(self):
+
+    def __iter__(self)->"search_zero":
         return self
+
 
     def __next__(self):
         if self.i<self.count:
-            if self.X[self.i][0] == str(self.v):
+            if self.data_x[self.i][0] == str(self.search_date):
 
-                return self.Y[self.i][0]
+                return self.data_y[self.i][0]
             else:
                 self.i+=1
                 return -1
-                #raise StopIteration
         else:
             raise StopIteration
 
-def read_csv_data0(file_path):
+
+def read_csv_data0(file_path:str)->[list,int]:
+    """
+    получение информации из cvs файла
+    """
     data = []
     count=0
     with open(file_path, 'r') as file:
@@ -56,7 +64,11 @@ def read_csv_data0(file_path):
             count+=1
     return data,count
 
-def read_csv_data1(X,Y):
+
+def read_csv_data1(X:str,Y:str)->[list,list,int]:
+    """
+        получение информации из cvs файла x и y
+        """
     data_x = []
     data_y = []
     count=0
@@ -72,11 +84,14 @@ def read_csv_data1(X,Y):
 
     return data_x,data_y,count
 
-def read_csv_data2_3(f_name):
+
+def read_csv_data2_3(f_name:str)->[list,int]:
+    """
+        получение информации из cvs файлов
+        """
     data= []
     count=0
     for filename in os.listdir(f_name):
-        #print(filename)
         with open(f_name+"/"+filename) as csvfile:
             csv_reader = csv.reader(csvfile, delimiter=";")
             for row in csv_reader:
@@ -84,16 +99,25 @@ def read_csv_data2_3(f_name):
                 count += 1
     return data,count
 
+
 if __name__ == "__main__":
-#s_iter1 = SimpleIterator(3)
-    v=datetime.date(2023, 10, 9)
+    parser = argparse.ArgumentParser(description="пример работы")
+    parser.add_argument('--date', type=datetime, default="2023-10-9")
+    parser.add_argument('--csv', type=str, default='C:/Users/dog/Desktop/долги/прикладное/валюта/course.csv')
+    parser.add_argument('--x', type=str, default='C:/Users/dog/Desktop/долги/прикладное/валюта/X Y/X.csv')
+    parser.add_argument('--y', type=str, default='C:/Users/dog/Desktop/долги/прикладное/валюта/X Y/Y.csv')
+    parser.add_argument('--year', type=str, default='C:/Users/dog/Desktop/долги/прикладное/валюта/года')
+    parser.add_argument('--week', type=str, default='C:/Users/dog/Desktop/долги/прикладное/валюта/недели')
+    args = parser.parse_args()
+    search_date=args.date
+    #search_date=datetime.date(2023, 10, 9)
     while True:
         print("из каких файлов искать:0.исходного файла, 1.X и Y, 2.по годам, 3. по неделям, 4. хватит искать")
         param = input("введите:")
         match int(param):
             case 0:
-                data,count =read_csv_data0("C:/Users/dog/Desktop/долги/прикладное/валюта/course.csv")
-                s_iter0 =search0(data,v,count)
+                data,count =read_csv_data0(args.csv)
+                s_iter0 =search_zero(data,search_date,count)
                 i=0
                 for val in s_iter0:
                     if val!=-1:
@@ -103,8 +127,8 @@ if __name__ == "__main__":
                 if i==0:
                     print("None")
             case 1:
-                data_x,data_y,count=read_csv_data1("C:/Users/dog/Desktop/долги/прикладное/валюта/X Y/X.csv","C:/Users/dog/Desktop/долги/прикладное/валюта/X Y/Y.csv")
-                s_iter1 =search1(data_x,data_y,v,count)
+                data_x,data_y,count=read_csv_data1(args.x,args.y)
+                s_iter1 =search_one(data_x,data_y,search_date,count)
                 i = 0
                 for val in s_iter1:
                     if val != -1:
@@ -114,8 +138,8 @@ if __name__ == "__main__":
                 if i == 0:
                     print("None")
             case 2:
-                data, count = read_csv_data2_3("C:/Users/dog/Desktop/долги/прикладное/валюта/года")
-                s_iter0 = search0(data, v, count)
+                data, count = read_csv_data2_3(args.year)
+                s_iter0 = search_zero(data, search_date, count)
                 i = 0
                 for val in s_iter0:
                     if val != -1:
@@ -126,8 +150,8 @@ if __name__ == "__main__":
                     print("None")
 
             case 3:
-                data, count = read_csv_data2_3("C:/Users/dog/Desktop/долги/прикладное/валюта/недели")
-                s_iter0 = search0(data, v, count)
+                data, count = read_csv_data2_3(args.week)
+                s_iter0 = search_zero(data, search_date, count)
                 i = 0
                 for val in s_iter0:
                     if val != -1:

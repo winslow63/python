@@ -10,6 +10,7 @@ def csv_name(data,n,folderpath):
     csvV = ".csv"
     d=f'{folderpath}/недели/'
     slech="_"
+
     name_file=f"{d}{str(data)}{slech}{str(past_date)}{csvV}"
     #print(name_file)
     return name_file

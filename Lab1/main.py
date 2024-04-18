@@ -4,65 +4,60 @@ import re
 import pathlib
 import datetime
 import csv
+import argparse
 
-def word_find(line):
-    if line.find("USD") != -1:
-        return 1
-    else:
-        return 0
 
-def dollar_search(file):
-    y=0
-    with open(file) as f:
-        for i,x in enumerate(f, start=1):
-            common = word_find(x)
-            y=y-1
-            if common==1:
-                y=7
-            if y==1:
-                z = re.split('<td>|</td>|\n', x.strip())
-                return z[1]
+def Urls(url:str,date:str)->dict:
+    """
+    получение данных из файла
+    """
+    date.replace('-', '/')
+    url = url.format(date=date)
+    html = requests.get(url)
+    if html.status_code != 200:
+        return {"error"}
+    json = html.json()
+    return json
 
-def URLS(n):
-    URL = 'http://www.cbr.ru/currency_base/daily/?UniDbQuery.Posted=True&UniDbQuery.To='
-    past_date = datetime.datetime.today() - datetime.timedelta(days=n)
-    if past_date.day<10:
-        nul="0"
-        day=f"{nul}{str(past_date.day)}"
-    else:
-        day=str(past_date.day)
-    if past_date.month<10:
-        nul = "0"
-        month=f"{nul}{str(past_date.month)}"
-    else:
-        month=str(past_date.month)
-    points = "."
-    data = f"{day}{points}{month}{points}{str(past_date.year)}"
-    URL1 = f"{URL}{data}"
-    return URL1,data
 
-def writeCSV(course,data):
-    with open("C:/Users/dog/Desktop/долги/прикладное/валюта/course.csv", mode="a", encoding="utf-8") as w_file:
+def write_Csv(course:str,data:str,way_file:str)->None:
+    """добавление в файл"""
+    with open(way_file, mode="a", encoding="utf-8") as w_file:
         file_writer = csv.writer(w_file, delimiter=";", lineterminator="\r")
         file_writer.writerow([data,course])
 
+
+def business_logic(url:str,way_file:str)->None:
+    """
+    бизнес логика
+    """
+    date = datetime.date.today()
+    n = 0
+    while n < 9000:  # счетчик количества длей для считывания долара
+        date_str=str(date).replace('-', '/')
+        URL = Urls(url,date_str)
+        if "error" in URL:
+            write_Csv("nane",date_str,way_file)
+            date -= datetime.timedelta(days=1)
+        else:
+            course=URL["Valute"]["USD"]["Value"]
+            date_str=date_str.replace('/', '-')
+            write_Csv(course, date_str, way_file)
+            date -= datetime.timedelta(days=1)
+
+        n = n + 1
+
+
 if __name__ == '__main__':
-    if os.path.exists("C:/Users/dog/Desktop/долги/прикладное/валюта/course.csv")==True:
-        file = pathlib.Path("C:/Users/dog/Desktop/долги/прикладное/валюта/course.csv")
+
+    parser = argparse.ArgumentParser(description="курс")
+    parser.add_argument('--url',type=str, default="https://www.cbr-xml-daily.ru/archive/{date}/daily_json.js")
+    parser.add_argument('--way_file',type=str, default='C:/Users/dog/Desktop/долги/прикладное/валюта/course.csv')
+    args = parser.parse_args()
+    if os.path.exists(args.way_file)==True:
+        file = pathlib.Path(args.way_file)
         file.unlink()
-    with open("C:/Users/dog/Desktop/долги/прикладное/валюта/course.csv", mode="a") as csvfile:
+    with open(args.way_file, mode="a") as csvfile:
         writer = csv.writer(csvfile, delimiter=";", lineterminator="\r")
         writer.writerow(["Дата","Информация"])
-
-    n=0
-    while n<9000:#счетчик количества длей для считывания долара
-        URL,data=URLS(n)
-        html_page = requests.get(URL)
-        file_1 = open('D:/HTML.txt', 'w')
-        file_1.write(html_page.text)
-        file_1.close()
-        course=dollar_search("D:/HTML.txt")
-        writeCSV(course,data)
-        n=n+1
-    file=pathlib.Path("D:/HTML.txt")
-    file.unlink()
+    business_logic(args.url,args.way_file)
