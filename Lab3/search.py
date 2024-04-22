@@ -1,24 +1,49 @@
 import argparse
-import os
 import csv
+import os
 
 
 def check_file_existence(directory:str, filename:str)->bool:
-    """проверка на существование файла в директории"""
+    """
+    проверка на существование файла в директории
+    :param directory: путь к папке.
+    :type directory: str
+    :param filename: имя файла.
+    :type filename: str
+    :return: есть ли файл в директории
+    :rtype:bool
+    """
     file_path = os.path.join(directory, filename)
     return os.path.exists(file_path)
 
 
 def check_file_extension(filename:str, desired_extension:str)->bool:
-    """проверака существует ли файл с расширением .csv в директории"""
+    """
+    проверака существует ли файл с расширением .csv в директории
+    :param filename: расширение файла
+    :type filename: str
+    :param desired_extension: путь к папке.
+    :type desired_extension: str
+    :return: есть ли файл с данным расширением в директории
+    :rtype:bool
+    """
     return filename.endswith(desired_extension)
 
 
 def Y(i:int,folderpath_search:str,y_file:str)->float:
-    """поиск информации в игрик файле"""
-    folderpath = f"{folderpath_search}/'"
-    file = os.path.join(folderpath, y_file)
-    with open(f'{folderpath_search}/Y.csv') as csvfile:
+    """
+    поиск информации в игрик файле
+    :param i: строка в которой находится курс долара
+    :type i: int
+    :param folderpath_search: путь к папке.
+    :type folderpath_search: str
+    :param y_file: имя файла.
+    :type y_file: str
+    :return: курс долара
+    :rtype:float
+    """
+    file = os.path.join(folderpath_search, y_file)
+    with open(file) as csvfile:
         reader = csv.DictReader(csvfile, delimiter=";")
         y = 0
         for rov in reader:
@@ -28,7 +53,15 @@ def Y(i:int,folderpath_search:str,y_file:str)->float:
 
 
 def get_data_by_date(data:str, folderpath_search:str)->float:
-    """поиск по дате"""
+    """
+    поиск по дате
+    :param data: дата по которой ищем
+    :type data: str
+    :param folderpath_search: путь к папке.
+    :type folderpath_search: str
+    :return: курс долара
+    :rtype:float
+    """
     parser = argparse.ArgumentParser(description="пример работы")
     parser.add_argument('--csv', type=str, default='course.csv')
     parser.add_argument('--x', type=str, default='X.csv')
@@ -38,8 +71,7 @@ def get_data_by_date(data:str, folderpath_search:str)->float:
     args = parser.parse_args()
     if check_file_existence(folderpath_search,args.csv):
         i = 0
-        folderpath = f"{folderpath_search}/'"
-        file = os.path.join(folderpath, args.csv)
+        file = os.path.join(folderpath_search, args.csv)
         with open (file) as csvfile:
             reader = csv.DictReader(csvfile, delimiter=";")
             for rov in reader:
@@ -48,11 +80,10 @@ def get_data_by_date(data:str, folderpath_search:str)->float:
                     i = 1
             if i == 0:
                 return ("None")
-    if check_file_existence(folderpath_search, 'X.csv'):
+    if check_file_existence(folderpath_search, args.x):
         i = 0
         p = 0
-        folderpath = f"{folderpath_search}/'"
-        file = os.path.join(folderpath, args.x)
+        file = os.path.join(folderpath_search, args.x)
         with open(file) as csvfile:
             reader = csv.DictReader(csvfile, delimiter=";")
             for rov in reader:
@@ -66,8 +97,7 @@ def get_data_by_date(data:str, folderpath_search:str)->float:
     for filename in os.listdir(folderpath_search):
 
         if check_file_extension(filename, args.csv1):
-            folderpath = f"{folderpath_search}/'"
-            file = os.path.join(folderpath, filename)
+            file = os.path.join(folderpath_search, filename)
             with open(file) as csvfile:
                 reader = csv.DictReader(csvfile, delimiter=";")
                 for rov in reader:
