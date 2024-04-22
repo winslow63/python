@@ -1,15 +1,26 @@
-import os
-import requests
-import re
-import pathlib
-import datetime
-import csv
 import argparse
+import csv
+import datetime
+import os
+import pathlib
+import re
+import requests
 
 
-def Urls(url:str,date:str)->dict:
+
+
+
+
+
+def urls(url:str,date:str)->dict:
     """
     получение данных из файла
+    :param url: сылка.
+    :type url: str
+    :param date: дата для сылки.
+    :type date: str
+    :return: данные из файла
+    :rtype: dict
     """
     date.replace('-', '/')
     url = url.format(date=date)
@@ -20,29 +31,41 @@ def Urls(url:str,date:str)->dict:
     return json
 
 
-def write_Csv(course:str,data:str,way_file:str)->None:
-    """добавление в файл"""
+def write_сsv(course:str,data:str,way_file:str)->None:
+    """
+    добавление в файл
+    :param course: кусс долара на день.
+    :type course: str
+    :param date: дата.
+    :type date: str
+    :param way_file: путь к файлу для сохранения.
+    :type way_file: str
+    """
     with open(way_file, mode="a", encoding="utf-8") as w_file:
         file_writer = csv.writer(w_file, delimiter=";", lineterminator="\r")
         file_writer.writerow([data,course])
 
 
-def business_logic(url:str,way_file:str)->None:
+def reading_and_entering_into_the_course_file(url:str,way_file:str)->None:
     """
-    бизнес логика
+    считывание и занесение в файл курса долара
+    :param url: сылка без  даты.
+    :type url: str
+    :param way_file: путь к файлу для сохранения.
+    :type way_file: str
     """
     date = datetime.date.today()
     n = 0
     while n < 9000:  # счетчик количества длей для считывания долара
         date_str=str(date).replace('-', '/')
-        URL = Urls(url,date_str)
+        URL = urls(url,date_str)
         if "error" in URL:
-            write_Csv("nane",date_str,way_file)
+            write_сsv("nane",date_str,way_file)
             date -= datetime.timedelta(days=1)
         else:
             course=URL["Valute"]["USD"]["Value"]
             date_str=date_str.replace('/', '-')
-            write_Csv(course, date_str, way_file)
+            write_сsv(course, date_str, way_file)
             date -= datetime.timedelta(days=1)
 
         n = n + 1
@@ -60,4 +83,4 @@ if __name__ == '__main__':
     with open(args.way_file, mode="a") as csvfile:
         writer = csv.writer(csvfile, delimiter=";", lineterminator="\r")
         writer.writerow(["Дата","Информация"])
-    business_logic(args.url,args.way_file)
+    reading_and_entering_into_the_course_file(args.url,args.way_file)
