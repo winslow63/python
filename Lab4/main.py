@@ -1,31 +1,60 @@
 import argparse
-
-import pandas as pd
 import matplotlib.pyplot as plt
+import pandas as pd
 
 
 def filter_by_date_range(df:pd.DataFrame, start_date:str, end_date:str)-> pd.DataFrame:
-    """DataFram отфильтрованный по датам DataFram"""
+    """
+    DataFram отфильтрованный по датам DataFram
+    :param df: начальный датьфреейм
+    :type df: pd.DataFrame
+    :param start_date: начальная дата
+    :type start_date: str
+    :param end_date: конечная дата
+    :type end_date: str
+    :return: датафрейм отфильтрованный по датам
+    :rtype:pd.DataFrame
+    """
     df['Дата'] = pd.to_datetime(df['Дата'])
     filtered_df = df[(df['Дата'] >= start_date) & (df['Дата'] <= end_date)]
     return filtered_df
 
 
 def filter_by_mean_deviation(df:pd.DataFrame, deviation_value:float)-> pd.DataFrame:
-    """DataFrame отфильтрованный по значению отклонения от среднего значения курса """
+    """
+    DataFrame отфильтрованный по значению отклонения от среднего значения курса
+    :param df: начальный датьфреейм
+    :type df: pd.DataFrame
+    :param deviation_value: отклонение
+    :type deviation_value: float
+    :return: датафрейм отфильтрованный поотклонениям
+    :rtype:pd.DataFrame
+    """
     filtered_df = df[df['среднее'] >= deviation_value]
     return filtered_df
 
 
 def filter_by_month(df:pd.DataFrame)->pd.DataFrame:
-    """Групировка по месяцу"""
+    """
+    Групировка по месяцу
+    :param df: начальный датьфреейм
+    :type df: pd.DataFrame
+    :return: сгрупированный датафрейм
+    :rtype:pd.DataFrame
+    """
     df['Дата'] = pd.to_datetime(df['Дата'])
     monthly_mean = df.groupby(df['Дата'].dt.to_period('M')).mean().drop(columns=['Дата'])
     return monthly_mean
 
 
 def plot_currency_monthly_stats(dataframe:pd.DataFrame, month:int)->None:
-    """"графики изменения курса, а также медиану и среднее значение за указанный месяц"""
+    """"
+    графики изменения курса, а также медиану и среднее значение за указанный месяц
+    :param dataframe: начальный датьфреейм
+    :type dataframe: pd.DataFrame
+    :param month: месяц
+    :type month: int
+    """
     dataframe['Дата'] = pd.to_datetime(dataframe['Дата'])
     monthly_data = dataframe[(dataframe['Дата'].dt.month == month) & (dataframe['Дата'].dt.year == 2024)]
     plt.figure(figsize=(10, 6))
@@ -52,7 +81,11 @@ def plot_currency_monthly_stats(dataframe:pd.DataFrame, month:int)->None:
 
 
 def course_change(dataframe:pd.DataFrame)->None:
-    """график изменения курса за весь период"""
+    """
+    график изменения курса за весь период
+    :param dataframe: начальный датьфреейм
+    :type dataframe: pd.DataFrame
+    """
     dataframe['Дата'] = pd.to_datetime(dataframe['Дата'])
     plt.figure(figsize=(10, 6))
     plt.plot(dataframe['Дата'], dataframe['Информация'], marker='o', linestyle='-')
