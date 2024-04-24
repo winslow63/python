@@ -1,7 +1,11 @@
 import argparse
 import csv
 import datetime
+import logging
 import os
+
+
+logging.basicConfig(filename='search_log_class_iterators_searching.log', level=logging.INFO, format='%(asctime)s - %(levelname)s - %(message)s')
 
 
 class search_undivided_files:
@@ -12,13 +16,13 @@ class search_undivided_files:
         self.i=0
         self.count=count
 
-    def __iter__(self)->"search_zero":
+    def __iter__(self):
         return self
 
     def __next__(self):
         if self.i<self.count:
             if self.data[self.i][0] == str(self.search_date):
-
+                logging.info(f"Найдены данные для даты: {self.search_date}")
                 return self.data[self.i][1]
             else:
                 self.i+=1
@@ -37,14 +41,14 @@ class ssearch_in_split_files:
         self.count=count
 
 
-    def __iter__(self)->"search_zero":
+    def __iter__(self):
         return self
 
 
     def __next__(self):
         if self.i<self.count:
             if self.data_x[self.i][0] == str(self.search_date):
-
+                logging.info(f"Найдены данные для даты: {self.search_date}")
                 return self.data_y[self.i][0]
             else:
                 self.i+=1
@@ -68,6 +72,7 @@ def read_csv_data_file(file_path:str)->[list,int]:
         for row in csv_reader:
             data.append(row)
             count+=1
+    logging.info(f"Прочитан файл: {file_path}")
     return data,count
 
 
@@ -93,7 +98,7 @@ def read_csv_data_files_x_y(X_file:str,Y_file:str)->[list,list,int]:
         csv_reader = csv.reader(file, delimiter=";")
         for row in csv_reader:
             data_y.append(row)
-
+    logging.info(f"Прочитаны файлы: {X_file}, {Y_file}")
     return data_x,data_y,count
 
 
@@ -115,10 +120,21 @@ def read_csv_data_files(f_name:str)->[list,int]:
             for row in csv_reader:
                 data.append(row)
                 count += 1
+    logging.info(f"Прочитан файл: {file_name}")
     return data,count
 
 
 if __name__ == "__main__":
+
+    logger = logging.getLogger(__name__)
+
+    file_handler = logging.FileHandler('currency_log_class_iterators_searching.log')
+    file_handler.setLevel(logging.INFO)
+
+    formatter = logging.Formatter('%(asctime)s - %(levelname)s - %(message)s')
+    file_handler.setFormatter(formatter)
+    logger.addHandler(file_handler)
+
     parser = argparse.ArgumentParser(description="пример работы c разными файлами")
     parser.add_argument('--date', type=datetime, default="2023-10-9")
     parser.add_argument('--csv', type=str, default='C:/Users/dog/Desktop/долги/прикладное/валюта/course.csv')

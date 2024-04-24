@@ -1,15 +1,13 @@
 import argparse
 import csv
 import datetime
+import logging
 import os
 import pathlib
-import re
 import requests
 
 
-
-
-
+logging.basicConfig(filename='currency_log.log', level=logging.INFO, format='%(asctime)s - %(levelname)s - %(message)s')
 
 
 def urls(url:str,date:str)->dict:
@@ -26,6 +24,7 @@ def urls(url:str,date:str)->dict:
     url = url.format(date=date)
     html = requests.get(url)
     if html.status_code != 200:
+        logging.error(f"Ошибка получения данных по ссылке: {url}")
         return {"error"}
     json = html.json()
     return json
@@ -44,6 +43,7 @@ def write_сsv(course:str,data:str,way_file:str)->None:
     with open(way_file, mode="a", encoding="utf-8") as w_file:
         file_writer = csv.writer(w_file, delimiter=";", lineterminator="\r")
         file_writer.writerow([data,course])
+        logging.info(f"Добавлена запись в файл: {data}, {course}")
 
 
 def reading_and_entering_into_the_course_file(url:str,way_file:str)->None:
@@ -61,6 +61,7 @@ def reading_and_entering_into_the_course_file(url:str,way_file:str)->None:
         URL = urls(url,date_str)
         if "error" in URL:
             write_сsv("nane",date_str,way_file)
+            logging.error(f"Ошибка получения данных за дату: {date_str}")
             date -= datetime.timedelta(days=1)
         else:
             course=URL["Valute"]["USD"]["Value"]
@@ -72,6 +73,14 @@ def reading_and_entering_into_the_course_file(url:str,way_file:str)->None:
 
 
 if __name__ == '__main__':
+    logger = logging.getLogger(__name__)
+
+    file_handler = logging.FileHandler('currency_log.log')
+    file_handler.setLevel(logging.INFO)
+
+    formatter = logging.Formatter('%(asctime)s - %(levelname)s - %(message)s')
+    file_handler.setFormatter(formatter)
+    logger.addHandler(file_handler)
 
     parser = argparse.ArgumentParser(description="курс")
     parser.add_argument('--url',type=str, default="https://www.cbr-xml-daily.ru/archive/{date}/daily_json.js")
