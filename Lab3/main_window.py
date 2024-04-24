@@ -1,14 +1,14 @@
 import argparse
+import os
 import functions_creating_anotype_directory
 import next_element
-import one
 import search
-import three
-import two
-import zero
 from PyQt5 import QtWidgets
 from PyQt5.QtWidgets import QFileDialog
 from PyQt5.QtWidgets import QApplication, QFileDialog
+from Lab2.creature_x_y_file import x_file, y_file
+from Lab2.creature_year_files import n_files
+from Lab2.creature_week_files import separation_files_n
 
 
 class MainWindow(QtWidgets.QMainWindow):
@@ -67,19 +67,15 @@ class MainWindow(QtWidgets.QMainWindow):
             QtWidgets.QMessageBox.warning(self, "Error", "Не выбрана папка")
 
 
-    def create_course(self)->None:
-        """создание исходного файла"""
-        try:
-            zero.create_course(self.folderpath)
-            QtWidgets.QMessageBox.information(self, "Success", "Файл course.csv был создан")
-        except Exception as e:
-            QtWidgets.QMessageBox.critical(self, "Error", f"Произошла ошибка при создании файла course.csv: {e}")
-
 
     def split_xy(self)->None:
         """создание файлов x и y"""
         try:
-            one.split_csv_xy(self.folderpath)
+            files_x=os.path.join(self.folderpath,args.x)
+            files_y = os.path.join(self.folderpath, args.y)
+            files_csv=os.path.join(self.folderpath, args.csv)
+            x_file(files_x,files_csv)
+            y_file(files_y, files_csv)
             QtWidgets.QMessageBox.information(self, "Success", "Файлы X.csv и Y.csv созданы")
         except Exception as e:
             QtWidgets.QMessageBox.critical(self, "Error", f"Произошла ошибка при создании файлов X.csv Y.csv: {e}")
@@ -88,7 +84,9 @@ class MainWindow(QtWidgets.QMainWindow):
     def split_by_year(self)->None:
         """создание файлов по годам"""
         try:
-            two.split_csv_by_year(self.folderpath)
+            files_csv = os.path.join(self.folderpath, args.csv)
+            files_n = os.path.join(self.folderpath, args.year)
+            n_files(files_csv,files_n)
             QtWidgets.QMessageBox.information(self, "Success", "Файлы по годам созданы")
         except Exception as e:
             QtWidgets.QMessageBox.critical(self, "Error", f"Произошла ошибка при создании файлов по годам: {e}")
@@ -97,7 +95,9 @@ class MainWindow(QtWidgets.QMainWindow):
     def split_by_week(self)->None:
         """создание файлов по неделям"""
         try:
-            three.split_csv_by_week(self.folderpath)
+            files_csv = os.path.join(self.folderpath, args.csv)
+            files_n = os.path.join(self.folderpath, args.week)
+            separation_files_n(files_csv,files_n)
             QtWidgets.QMessageBox.information(self, "Success", "Файлы по неделям созданы")
         except Exception as e:
             QtWidgets.QMessageBox.critical(self, "Error", f"Произошла ошибка при создании файлов по неделям: {e}")
@@ -117,7 +117,6 @@ class MainWindow(QtWidgets.QMainWindow):
         """поиск по дате"""
         try:
             date = self.date_edit.date().toString("yyyy-MM-dd")
-            #selected_file = QFileDialog.getOpenFileName(caption="Выберите файл")
             data = search.get_data_by_date(date,self.folderpath_search)
             if data:
                 QtWidgets.QMessageBox.information(self, "Data", data)
@@ -166,6 +165,10 @@ class MainWindow(QtWidgets.QMainWindow):
 if __name__ == '__main__':
     parser = argparse.ArgumentParser(description="пример работы")
     parser.add_argument('--csv', type=str, default='course.csv')
+    parser.add_argument('--x', type=str, default='X Y/X.csv')
+    parser.add_argument('--y', type=str, default='X Y/Y.csv')
+    parser.add_argument('--year', type=str, default='года')
+    parser.add_argument('--week', type=str, default='недели')
     args = parser.parse_args()
     app = QtWidgets.QApplication([])
     window = MainWindow()

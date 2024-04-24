@@ -5,20 +5,22 @@ import os
 import re
 
 
-def csv_name(data:str,n:int)->str:
+def csv_name(data:str,n:int,week:str)->str:
     '''
     путь к файлу n
     :param data: дата.
     :type data: str
     :param n: число дней.
     :type n: int
+    :param week: путь к папке с неделями.
+    :type week: str
     :return: путь к файлу для заполнгения
     :rtype:str
     '''
     datas = re.split('-', data.strip())
     past_date = datetime.date(int(datas[0]), int(datas[1]), int(datas[2])) - datetime.timedelta(days=n-1)
     past_date = past_date.isoformat()
-    name_file=os.path.join(args.week,f"{str(data)}_{str(past_date)}.csv")
+    name_file=os.path.join(week,f"{str(data)}_{str(past_date)}.csv")
     return name_file
 
 
@@ -45,11 +47,13 @@ def first_line_n(name_file:str)->None:
         writer.writerow(["Дата","Информация"])
 
 
-def separation_files_n(file_csv:str)->None:
+def separation_files_n(file_csv:str,week:str)->None:
     '''
     разделение первоначального файла на н подфайлов по условию
     :param file_csv: путь к исходному файлу.
     :type file_csv: str
+    :param week: путь к папке с неделями.
+    :type week: str
     '''
     days = 0
     lines = 0
@@ -64,10 +68,10 @@ def separation_files_n(file_csv:str)->None:
             if days == 0:
                 lines_left=r_q-lines
                 if lines_left<7:
-                    name_file = csv_name(rov['Дата'], lines_left-1)
+                    name_file = csv_name(rov['Дата'], lines_left-1,week)
                     first_line_n(name_file)
                 else:
-                    name_file=csv_name(rov['Дата'],7)
+                    name_file=csv_name(rov['Дата'],7,week)
                     first_line_n(name_file)
             with open(name_file, mode="a") as csvX:
                 writer = csv.writer(csvX,delimiter=";", lineterminator="\r")
@@ -84,4 +88,4 @@ if __name__ == "__main__":
     parser.add_argument('--year', type=str, default='C:/Users/dog/Desktop/долги/прикладное/валюта/года')
     parser.add_argument('--week', type=str, default='C:/Users/dog/Desktop/долги/прикладное/валюта/недели/')
     args = parser.parse_args()
-    separation_files_n(args.csv)
+    separation_files_n(args.csv,args.week)

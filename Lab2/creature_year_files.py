@@ -5,20 +5,22 @@ import os
 import re
 
 
-def csv_name(data:str,n:int)->str:
+def csv_name(data:str,n:int,year:str)->str:
     '''
     путь к файлу n
     :param data: дата.
     :type data: str
     :param n: число дней.
     :type n: int
+    :param year: путь к папке с годами.
+    :type year: str
     :return: путь к файлу для заполнгения
     :rtype:str
     '''
     datas = re.split('-', data.strip())
     past_date = datetime.date(int(datas[0]), int(datas[1]), int(datas[2])) - datetime.timedelta(days=n-1)
     past_date = past_date.isoformat()
-    name_file=os.path.join(args.year,f"{str(data)}_{str(past_date)}.csv")
+    name_file=os.path.join(year,f"{str(data)}_{str(past_date)}.csv")
     return name_file
 
 
@@ -45,11 +47,13 @@ def first_line_n(name_file:str)->None:
         writer.writerow(["Дата","Информация"])
 
 
-def n_files(file_csv:str)->None:
+def n_files(file_csv:str, year:str)->None:
     '''
     разделение первоначального файла на н подфайлов по условию
     :param file_csv: путь к исходному файлу.
     :type file_csv: str
+    :param year: путь к папке с годами.
+    :type year: str
     '''
     days = 0
     lines = 0
@@ -64,11 +68,11 @@ def n_files(file_csv:str)->None:
             if days == 0:
                 lines_left=r_q-lines
                 if lines_left<365:
-                    name_file = csv_name(rov['Дата'], lines_left-1)
+                    name_file = csv_name(rov['Дата'], lines_left-1,year)
                     first_line_n(name_file)
 
                 else:
-                    name_file=csv_name(rov['Дата'],365)
+                    name_file=csv_name(rov['Дата'],365,year)
                     first_line_n(name_file)
             with open(name_file, mode="a") as csvX:
                 writer = csv.writer(csvX,delimiter=";", lineterminator="\r")
@@ -85,4 +89,4 @@ if __name__ == "__main__":
     parser.add_argument('--year', type=str, default='C:/Users/dog/Desktop/долги/прикладное/валюта/года/')
     parser.add_argument('--week', type=str, default='C:/Users/dog/Desktop/долги/прикладное/валюта/недели/')
     args = parser.parse_args()
-    n_files(args.csv)
+    n_files(args.csv,args.year)
