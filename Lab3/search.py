@@ -62,16 +62,13 @@ def get_data_by_date(data:str, folderpath_search:str)->float:
     :return: курс долара
     :rtype:float
     """
-    parser = argparse.ArgumentParser(description="пример работы")
-    parser.add_argument('--csv', type=str, default='course.csv')
-    parser.add_argument('--x', type=str, default='X.csv')
-    parser.add_argument('--y', type=str, default='Y.csv')
-    parser.add_argument('--csv1', type=str, default='.csv')
-    parser.add_argument('--week', type=str, default='C:/Users/dog/Desktop/долги/прикладное/валюта/недели')
-    args = parser.parse_args()
-    if check_file_existence(folderpath_search,args.csv):
+    csvs="course.csv"
+    x="X.csv"
+    y="Y.csv"
+    csv1=".csv"
+    if check_file_existence(folderpath_search,csvs):
         i = 0
-        file = os.path.join(folderpath_search, args.csv)
+        file = os.path.join(folderpath_search,csvs)
         with open (file) as csvfile:
             reader = csv.DictReader(csvfile, delimiter=";")
             for rov in reader:
@@ -80,23 +77,23 @@ def get_data_by_date(data:str, folderpath_search:str)->float:
                     i = 1
             if i == 0:
                 return ("None")
-    if check_file_existence(folderpath_search, args.x):
+    if check_file_existence(folderpath_search, x):
         i = 0
         p = 0
-        file = os.path.join(folderpath_search, args.x)
+        file = os.path.join(folderpath_search, x)
         with open(file) as csvfile:
             reader = csv.DictReader(csvfile, delimiter=";")
             for rov in reader:
                 i = i + 1
                 if rov["Дата"] == str(data):
                     p = 1
-                    return Y(i, folderpath_search,args.y)
+                    return Y(i, folderpath_search,y)
             if p == 0:
                 return ("None")
     i = 0
     for filename in os.listdir(folderpath_search):
 
-        if check_file_extension(filename, args.csv1):
+        if check_file_extension(filename,csv1):
             file = os.path.join(folderpath_search, filename)
             with open(file) as csvfile:
                 reader = csv.DictReader(csvfile, delimiter=";")

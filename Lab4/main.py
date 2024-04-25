@@ -1,4 +1,6 @@
 import argparse
+import datetime
+import logging
 import matplotlib.pyplot as plt
 import pandas as pd
 
@@ -56,7 +58,7 @@ def plot_currency_monthly_stats(dataframe:pd.DataFrame, month:int)->None:
     :type month: int
     """
     dataframe['Дата'] = pd.to_datetime(dataframe['Дата'])
-    monthly_data = dataframe[(dataframe['Дата'].dt.month == month) & (dataframe['Дата'].dt.year == 2024)]
+    monthly_data = dataframe[(dataframe['Дата'].dt.month == month) & (dataframe['Дата'].dt.year == datetime.now().year)]
     plt.figure(figsize=(10, 6))
     plt.plot(monthly_data['Дата'], monthly_data['Информация'], marker='o', linestyle='-')
     plt.title(f'Изменение курса за {month}-й месяц')
@@ -99,6 +101,13 @@ def course_change(dataframe:pd.DataFrame)->None:
 
 
 if __name__ == '__main__':
+    console_handler = logging.StreamHandler()
+    console_handler.setLevel(logging.INFO)
+    formatter = logging.Formatter('%(asctime)s - %(levelname)s - %(message)s')
+    console_handler.setFormatter(formatter)
+    console_logger = logging.getLogger('console_logger')
+    console_logger.addHandler(console_handler)
+
     parser = argparse.ArgumentParser(description="получение статистики")
     group = parser.add_mutually_exclusive_group()
     group.add_argument("--option1", action="store_true", help="Фильтрация по отклонению от среднего значения курса")
@@ -113,41 +122,38 @@ if __name__ == '__main__':
 
 
     df = pd.read_csv("course.csv",encoding='cp1251', delimiter=';')
-    print(df.head())
+    console_logger.info(f"{df.head()}")
     invalid_values = df.isna().any()
-    print("Колонки с невалидными значениями:")
-    print(invalid_values)
+    console_logger.info(f"Колонки с невалидными значениями:{invalid_values}")
     df['Информация'] = df['Информация'].str.replace(',', '.').astype(float)
     median_rate = df['Информация'].median()
     mean_rate = df['Информация'].mean()
-    print(median_rate)
-    print(mean_rate)
+    console_logger.info(f"Медиана:{median_rate}")
+    console_logger.info(f"Среднее:{mean_rate}")
     df['медиана'] = df['Информация'] - median_rate
     df['среднее'] = df['Информация'] - mean_rate
 
     rate_stats = df['Информация'].describe()
     median_deviation_stats = df['медиана'].describe()
     mean_deviation_stats = df['среднее'].describe()
-    print("Статистическая информация о курсе:")
-    print(rate_stats)
-    print("\nСтатистическая информация об отклонении от медианы:")
-    print(median_deviation_stats)
-    print("\nСтатистическая информация об отклонении от среднего:")
-    print(mean_deviation_stats)
+
+    console_logger.info(f"Статистическая информация о курсе:{rate_stats}")
+    console_logger.info(f"\nСтатистическая информация об отклонении от медианы:{median_deviation_stats}")
+    console_logger.info(f"\nСтатистическая информация об отклонении от среднего:{mean_deviation_stats}")
 
     if args.option1:
         filtered_df = filter_by_mean_deviation(df, args.deviation_value)
-        print(filtered_df)
+        console_logger.info(f"{filtered_df}")
     elif args.option2:
         data_df = filter_by_date_range(df, args.start_date, args.end_date)
-        print(data_df)
+        console_logger.info(f"{data_df}")
     elif args.option3:
         month = filter_by_month(df)
-        print(month)
+        console_logger.info(f"{month}")
     elif args.option4:
         course_change(df)
     elif args.option5:
         plot_currency_monthly_stats(df, 4)
     else:
-        print("Выбран неправильный номер")
+        console_logger.info(f"Выбран неправильный номер")
 

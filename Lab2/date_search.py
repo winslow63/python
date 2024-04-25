@@ -25,14 +25,15 @@ def search_elementary_file(search_date:datetime,file_vsv:str)->None:
             for rov in reader:
                 if rov['Дата']==str(search_date):
                     logging.info(f"Найдена информация: {rov['Информация']}")
-                    print(rov['Информация'])
+                    console_logger.info(f"Найдена информация: {rov['Информация']}")
                     i=1
             if i==0:
                 logging.info("Информация не найдена.")
-                print("None")
+                console_logger.info("None")
     except FileNotFoundError:
         logging.error(f"Файл {file_vsv} не найден.")
-        print("Файл не найден.")
+        console_logger.info("Файл не найден.")
+
 
 def search_files_x_y(search_date:datetime,file_x:str,file_y:str)->None:
     """
@@ -56,10 +57,10 @@ def search_files_x_y(search_date:datetime,file_x:str,file_y:str)->None:
                     Y_file(i,file_y)
             if p==0:
                 logging.info("Информация не найдена.")
-                print("None")
+                console_logger.info("None")
     except FileNotFoundError:
         logging.error(f"Файл {file_x} не найден.")
-        print("Файл не найден.")
+        console_logger.info("Файл не найден.")
 
 
 def Y_file(i:int,file_y:str)->None:
@@ -78,10 +79,10 @@ def Y_file(i:int,file_y:str)->None:
                 y = y + 1
                 if y == i:
                     logging.info(f"Найдена информация из файла {file_y}: {rov['Информация']}")
-                    print(rov['Информация'])
+                    console_logger.info(f"Найдена информация: {rov['Информация']}")
     except FileNotFoundError:
         logging.error(f"Файл {file_y} не найден.")
-        print("Файл не найден.")
+        console_logger.info("Файл не найден.")
 
 
 def search_files_year(search_date:datetime,file_year:str)->None:
@@ -101,14 +102,15 @@ def search_files_year(search_date:datetime,file_year:str)->None:
                 for rov in reader:
                     if rov['Дата'] == str(search_date):
                         logging.info(f"Найдена информация: {rov['Информация']}")
-                        print(rov['Информация'])
+                        console_logger.info(f"Найдена информация: {rov['Информация']}")
                         i = 1
         if i == 0:
             logging.info("Информация не найдена.")
-            print("None")
+            console_logger.info("None")
     except FileNotFoundError:
         logging.error(f"Папка {file_year} не найдена.")
-        print("Папка не найдена.")
+        console_logger.info("Папка не найдена.")
+
 
 def search_files_week(search_date:datetime,file_week:str)->None:
     """
@@ -127,15 +129,15 @@ def search_files_week(search_date:datetime,file_week:str)->None:
                 for rov in reader:
                     if rov['Дата'] == str(search_date):
                         logging.info(f"Найдена информация: {rov['Информация']}")
-                        print(rov['Информация'])
+                        console_logger.info(f"Найдена информация: {rov['Информация']}")
                         i = 1
 
         if i == 0:
             logging.info("Информация не найдена.")
-            print("None")
+            console_logger.info("None")
     except FileNotFoundError:
         logging.error(f"Папка {file_week} не найдена.")
-        print("Папка не найдена.")
+        console_logger.info("Папка не найдена.")
 
 
 def information_in_file(way:str)->list:
@@ -155,8 +157,9 @@ def information_in_file(way:str)->list:
             return tuple_list
     except FileNotFoundError:
         logging.error(f"Файл {way} не найден.")
-        print("Файл не найден.")
+        console_logger.info("Файл не найден.")
         return tuple_list
+
 
 def next(tuple:list)->list:
     """
@@ -177,7 +180,7 @@ def next(tuple:list)->list:
                 min_data=data_next
                 tuple_element=item
         logging.info(f"Минимальная дата: {tuple_element}")
-        print (tuple_element)
+        console_logger.info(f"Минимальная дата: {tuple_element}")
         tuple_list = []
         for item in tuple:
             if tuple_element==item:
@@ -190,14 +193,18 @@ def next(tuple:list)->list:
 
 
 if __name__ == "__main__":
-    logger = logging.getLogger(__name__)
 
     file_handler = logging.FileHandler('currency_log_date_search.log')
+    console_handler = logging.StreamHandler()
     file_handler.setLevel(logging.INFO)
-
+    console_handler.setLevel(logging.INFO)
     formatter = logging.Formatter('%(asctime)s - %(levelname)s - %(message)s')
     file_handler.setFormatter(formatter)
+    console_handler.setFormatter(formatter)
+    logger = logging.getLogger('file_logger')
+    console_logger = logging.getLogger('console_logger')
     logger.addHandler(file_handler)
+    console_logger.addHandler(console_handler)
     parser = argparse.ArgumentParser(description="пример работы c разными файлами")
     parser.add_argument('--date', type=lambda d: datetime.strptime(d, '%Y-%m-%d'), default="2023-10-9")
     parser.add_argument('--csv', type=str, default='C:/Users/dog/Desktop/долги/прикладное/валюта/course.csv')

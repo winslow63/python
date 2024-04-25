@@ -2,6 +2,7 @@ import csv
 import logging
 import os
 
+URL="http://www.cbr.ru/currency_base/daily/?UniDbQuery.Posted=True&UniDbQuery.To="
 
 logging.basicConfig( level=logging.INFO, format='%(asctime)s - %(levelname)s - %(message)s')
 
@@ -45,7 +46,7 @@ def create_annotation_file(folderpath:str,filepath:str,csvs:str)->None:
     :param csvs: имя файла исходного.
     :type csvs: str
     """
-    url="http://www.cbr.ru/currency_base/daily/?UniDbQuery.Posted=True&UniDbQuery.To="
+
     try:
         if check_file_existence(folderpath, csvs):
             file= os.path.join(folderpath,csvs)
@@ -53,6 +54,6 @@ def create_annotation_file(folderpath:str,filepath:str,csvs:str)->None:
                 reader = csv.DictReader(csvfile, delimiter=";")
                 for rov in reader:
                     with open(filepath, 'a') as file:
-                        file.write(f'{url}{rov['Дата'].replace("-",".")}\n')
+                        file.write(f'{URL}{rov['Дата'].replace("-",".")}\n')
     except Exception as e:
         logging.error(f"Ошибка при вводе оздании файла анотации {filepath}: {e}")

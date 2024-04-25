@@ -13,7 +13,6 @@ from Lab2.creature_week_files import separation_files_n
 
 class MainWindow(QtWidgets.QMainWindow):
 
-
     def __init__(self)->None:
         self.tuple_list=[]
         super(MainWindow, self).__init__()
@@ -52,7 +51,6 @@ class MainWindow(QtWidgets.QMainWindow):
         self.create_annotation_button.clicked.connect(self.create_annotation)
         self.layout.addWidget(self.create_annotation_button)
 
-
     def choose_folder(self)->None:
         """выбор папки для записи файлов"""
         folderpath = QFileDialog.getExistingDirectory(self, 'Выберите папку')
@@ -62,8 +60,6 @@ class MainWindow(QtWidgets.QMainWindow):
             QtWidgets.QMessageBox.information(self, "Success", "Папка выбрана")
         else:
             QtWidgets.QMessageBox.warning(self, "Error", "Не выбрана папка")
-
-
 
     def split_xy(self)->None:
         """создание файлов x и y"""
@@ -77,7 +73,6 @@ class MainWindow(QtWidgets.QMainWindow):
         except Exception as e:
             QtWidgets.QMessageBox.critical(self, "Error", f"Произошла ошибка при создании файлов X.csv Y.csv: {e}")
 
-
     def split_by_year(self)->None:
         """создание файлов по годам"""
         try:
@@ -87,7 +82,6 @@ class MainWindow(QtWidgets.QMainWindow):
             QtWidgets.QMessageBox.information(self, "Success", "Файлы по годам созданы")
         except Exception as e:
             QtWidgets.QMessageBox.critical(self, "Error", f"Произошла ошибка при создании файлов по годам: {e}")
-
 
     def split_by_week(self)->None:
         """создание файлов по неделям"""
@@ -99,7 +93,6 @@ class MainWindow(QtWidgets.QMainWindow):
         except Exception as e:
             QtWidgets.QMessageBox.critical(self, "Error", f"Произошла ошибка при создании файлов по неделям: {e}")
 
-
     def directory(self)->None:
         """выбор папки для поиска по дате"""
         self.folderpath_search = QFileDialog.getExistingDirectory(self, 'Выберите папку')
@@ -107,8 +100,6 @@ class MainWindow(QtWidgets.QMainWindow):
             QtWidgets.QMessageBox.information(self, "Success", "Папка выбрана")
         else:
             QtWidgets.QMessageBox.warning(self, "Error", "Не выбрана папка")
-
-
 
     def get_data(self)->None:
         """поиск по дате"""
@@ -120,8 +111,6 @@ class MainWindow(QtWidgets.QMainWindow):
         except Exception as e:
             QtWidgets.QMessageBox.critical(self, "Error", f"Произошла ошибка при поиске данных")
 
-
-
     def file(self)->None:
         """выбор файла для поиска минимальной даты"""
         selected_file = QFileDialog.getOpenFileName(caption="Выберите файл")
@@ -131,8 +120,6 @@ class MainWindow(QtWidgets.QMainWindow):
             QtWidgets.QMessageBox.information(self, "Success", "файл выбрана")
         else:
             QtWidgets.QMessageBox.warning(self, "Error", "Не выбран файл")
-
-
 
     def next(self)->None:
         """самая раняя дата"""
@@ -144,7 +131,6 @@ class MainWindow(QtWidgets.QMainWindow):
                 QtWidgets.QMessageBox.information(self, "Данные", str(next))
         except Exception as e:
             QtWidgets.QMessageBox.critical(self, "Error", f"Произошла ошибка")
-
 
     def create_annotation(self)->None:
         """создание файла анотации"""

@@ -8,7 +8,7 @@ import os
 logging.basicConfig(filename='search_log_class_iterators_searching.log', level=logging.INFO, format='%(asctime)s - %(levelname)s - %(message)s')
 
 
-class search_undivided_files:
+class SearchUndividedFiles:
 
     def __init__(self, data:list,search_date:datetime,count:int)->None:
         self.data = data
@@ -31,7 +31,7 @@ class search_undivided_files:
             raise StopIteration
 
 
-class ssearch_in_split_files:
+class SearchInSplitFiles:
 
     def __init__(self, data_x:list,data_y:list,search_date:datetime,count:int)->None:
         self.data_x = data_x
@@ -40,10 +40,8 @@ class ssearch_in_split_files:
         self.i=0
         self.count=count
 
-
     def __iter__(self):
         return self
-
 
     def __next__(self):
         if self.i<self.count:
